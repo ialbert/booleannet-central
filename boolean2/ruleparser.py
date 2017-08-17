@@ -2,8 +2,8 @@
 Grammar file for a boolean parser based on PLY
 """
 import random, time, sys
-import tokenizer, util, state
-from ply import yacc
+from . import tokenizer, util, state
+from .ply import yacc
 from itertools import *
 
 # a list of all valid modes
@@ -166,7 +166,7 @@ class Parser(object):
         self.uninit_nodes = self.update_nodes - self.init_nodes
 
         # populate the initializer lines
-        self.init_lines = map( tokenizer.tok2line, self.init_tokens )
+        self.init_lines = list(map( tokenizer.tok2line, self.init_tokens ))
 
         # populate the body by the ranks            
         labelmap = {} 
@@ -191,8 +191,8 @@ class Parser(object):
         # by shuffling, sorting or reorganizing this body we can
         # implement various updating rule selection strategies
         self.update_lines = {}
-        for key, values in labelmap.items():
-            self.update_lines.setdefault(key, []).extend( map(tokenizer.tok2line, values))
+        for key, values in list(labelmap.items()):
+            self.update_lines.setdefault(key, []).extend( list(map(tokenizer.tok2line, values)))
 
 def test():
 

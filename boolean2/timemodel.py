@@ -1,6 +1,5 @@
-import util
-import ruleparser
-from boolmodel import BoolModel
+from . import util, ruleparser
+from .boolmodel import BoolModel
 
 class TimeModel( BoolModel ):
 
@@ -16,7 +15,7 @@ class TimeModel( BoolModel ):
         self.step  = 0
         self.times = [ 0 ]
 
-    def next(self):
+    def __next__(self):
         "Generates the updates based on the next simulation step"
         self.step += 1
         timestep = self.step * self.gcd             
@@ -33,7 +32,7 @@ class TimeModel( BoolModel ):
         while 1:
             
             # skip ahead until something valid
-            value = self.next()
+            value = next(self)
             tstep = value[0]
             rules = value[1:]
             if rules:
@@ -47,11 +46,11 @@ class TimeModel( BoolModel ):
         Iterates over the lines 'steps' times. 
         """
         shuffler = shuffler or self.shuffler
-        for index in xrange(steps):
+        for index in range(steps):
             self.parser.RULE_START_ITERATION( index, self )
             BoolModel.state_update(self)
             lines = shuffler( )
-            map( self.local_parse, lines ) 
+            list(map( self.local_parse, lines )) 
 
 if __name__ == '__main__':
     
@@ -70,16 +69,16 @@ if __name__ == '__main__':
     model.initialize(  )
     
     #for i in range(5):
-        #print model.next()
-    #    print model.shuffler()
+        #print (model.next())
+    #    print (model.shuffler())
 
     from itertools import count
 
     c = count(0)
     model.iterate( steps=12 )
     for state in model.states:
-        t = c.next() * 5
+        t = next(c) * 5
         tstamp = 'T=%d ' % t
-        data = [ tstamp ] + map(int, (state.A, state.B, state.C, state.D))
-        data = map(str, data)
-        print '\t'.join(data)
+        data = [ tstamp ] + list(map(int, (state.A, state.B, state.C, state.D)))
+        data = list(map(str, data))
+        print(('\t'.join(data)))

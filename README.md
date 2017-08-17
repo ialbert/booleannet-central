@@ -6,7 +6,7 @@ in a boolean formalism. Using this simulator biologist and bioinformaticians can
 explore various dynamic behaviors via a web interface or an application programming interface (API) each designed to facilitate scientific discovery,
 data collection and reporting.
 
-The software is primarly distributed as [http://www.python.org Python] source code and requires that [http://www.python.org Python 2.5] (or later)
+The software is primarly distributed as [http://www.python.org Python] source code and requires that [http://www.python.org Python 3] (or later)
 be installed on the target computer.
 
 Latest release *1.2.7*, April 24th, 2014

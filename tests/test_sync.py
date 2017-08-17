@@ -81,9 +81,8 @@ class SyncTest( testbase.TestBase ):
         """
 
         # valid nodes
-        nodes  = string.uppercase[:]
+        nodes  = string.ascii_uppercase[:]
         join = testbase.join
-
         #
         # Initializes a bunch of nodes to random values
         #
@@ -107,14 +106,14 @@ class SyncTest( testbase.TestBase ):
         for node in nodes:
             
             # how many nodes per rule
-            targets = [ choice( nodes ) for step in range( randint(2, 8) ) ]
+            targets = [ choice( nodes ) for step in range( randint(2, 3) ) ]
             size = len( targets ) - 1
 
             # insert some parentheses
             if randint(1, 100) > 30:
                 for i in range(2):
                     half = size/2
-                    left, right = randint(0, half), randint(half, size)
+                    left, right = randint(0, int(half)), randint(int(half), size)
                     targets[left]  = '(' + targets[left]
                     targets[right] = targets[right] + ')'
 
@@ -152,26 +151,35 @@ class SyncTest( testbase.TestBase ):
         # execute the code in python for a number of steps
         # having too many steps is actually counterproductive as it falls into a steady state
         steps = 4
-        exec init_text
+        exec (init_text)    
+ 
         for i in range( steps ):
-            exec py_text in locals()
-        
-        # see the full text here
-        #print full_text
-        
-        text = init_text + bool_text 
 
-        # print text
+            exec (py_text)
+        
+        # Store python evaluations to compare modeline results to
+        store = locals()
+        valid_evals = {}
+
+        for x in store:
+             if x in nodes:
+                valid_evals[x] = store[x]
+
+        bool_text = init_text + bool_text 
+        
+        # See full text here
+        #print(bool_text)
+
         # execute the code with the modeline
-        states = testbase.get_states(mode='sync', text=text, steps=steps)
+        states = testbase.get_states(mode='sync', text=bool_text, steps=steps)
         last   = states[-1]
         
         # checks all states for equality with both methods
         for attr in nodes:
-            oldval = locals()[attr]
-            newval = getattr(last, attr )
-            #print attr, oldval, newval
-            self.EQ( oldval, newval )
+            valid = valid_evals[attr]
+            bool_val = getattr(last, attr )
+            #print (attr, valid, bool_val)
+            self.EQ( valid, bool_val )
 
 def get_suite():
     suite = unittest.TestLoader().loadTestsFromTestCase( SyncTest )

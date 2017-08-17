@@ -1,4 +1,5 @@
 import sys, random, pickle
+from functools import reduce
 
 #
 # handy shortcuts
@@ -17,12 +18,12 @@ def join( data, sep="\t", patt="%s\n"):
 
 def error(msg):
     "Prints an error message and stops"
-    print '*** error: %s' % msg
+    print(('*** error: %s' % msg))
     sys.exit()
 
 def warn(msg):
     "Prints a warning message"
-    print '*** warning: %s' % msg
+    print(('*** warning: %s' % msg))
  
 def tuple_to_bool( value ):
     """
@@ -50,7 +51,7 @@ def split( text ):
     """
     Strips lines and returns nonempty lines
     """
-    return filter(notcomment, map(strip, text.splitlines()))
+    return list(filter(notcomment, list(map(strip, text.splitlines()))))
 
 def default_shuffler( lines ):
     "Default shuffler"
@@ -74,8 +75,8 @@ def detect_cycles( data ):
     fsize   = len(data)
 
     # maximum size
-    for msize in xrange(1, fsize/2+1):
-        for index in xrange(fsize):
+    for msize in range(1, int(fsize/2+1)):
+        for index in range(fsize):
             left  = data[index:index+msize]
             right = data[index+msize:index+2*msize]
             if left == right:
@@ -152,7 +153,7 @@ class Collector(object):
             if normalize:
                 def divide(x):
                     return x/size
-                values = map(divide, values)
+                values = list(map(divide, values))
             out[node] = values
         return out
 

@@ -2,7 +2,7 @@ import unittest
 import testbase
 
 # these are the module names that will be tested
-modules = "test_sync test_time"
+modules = "test_sync"
 
 def get_suite():
     suite = unittest.TestSuite()

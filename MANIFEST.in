@@ -1,6 +1,0 @@
-include COPYRIGHT.txt
-include INSTALL.txt
-
-recursive-include examples *.py *.txt *.png *.bin *.csv
-recursive-include scripts *.py *.txt *.png *.bin *.csv
-recursive-include tests *.py *.csv *.txt *.bin

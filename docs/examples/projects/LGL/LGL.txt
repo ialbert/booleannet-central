@@ -30,7 +30,7 @@ Stimuli = IAP = Mcl1 = BclxL = PIAS = True
 1: Migration *= Fyn and not Apoptosis
 1: CTLA4 *= TCR and not Apoptosis
 1: LCK *= (TCR or IL2RL or CD45) and not (CSK or Apoptosis)
-1: PLC *= GRB2 and not Apoptosis
+1: PLC *= GRB2 and not Apoptosis 
 1: GRB2 *= LCK and not Apoptosis
 1: CSK *= TCR and not Apoptosis
 1: Ceramide *= (BID and FasL) and not Apoptosis

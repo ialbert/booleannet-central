@@ -1,10 +1,12 @@
 
 import sys, os
 from itertools import *
+from collections import OrderedDict 
 
 from boolean2.boolmodel import BoolModel
-from boolean2 import util, odict, tokenizer
-import helper
+from boolean2 import util, tokenizer
+from . import helper
+import imp
 
 try:
     import pylab
@@ -68,19 +70,20 @@ class PldeModel( BoolModel ):
         BoolModel.initialize( self, missing=missing, defaults=defaults )
         
         # will also maintain the order of insertion
-        self.mapper  = odict.odict() 
+        self.mapper  = OrderedDict() 
         self.indexer = {}
         
         # this will maintain the order of nodes
+	
         self.nodes = list(self.nodes)
         self.nodes.sort()
         for index, node in enumerate(self.nodes):
             triplet = self.first[node]
-            self.mapper [node] = ( index, node, triplet )
+            self.mapper[node] = ( index, node, triplet )
             self.indexer[node] = index
         
         # a sanity check
-        assert self.nodes == self.mapper.keys()
+        assert self.nodes == list(self.mapper.keys())
 
     def generate_init( self, localdefs ):
         """
@@ -91,9 +94,9 @@ class PldeModel( BoolModel ):
         init.extend( self.EXTRA_INIT.splitlines() )
         init.append( '# dynamically generated code' )
         init.append( '# abbreviations: c=concentration, d=decay, t=threshold, n=newvalue' )
-        init.append( '# %s' % self.mapper.values() )
+        init.append( '# %s' % list(self.mapper.values()) )
 
-        for index, node, triplet in self.mapper.values():
+        for index, node, triplet in list(self.mapper.values()):
             conc, decay, tresh = boolmapper(triplet)
             #assert decay > 0, 'Decay for node %s must be larger than 0 -> %s' % (node, str(triplet))   
             store = dict( index=index, conc=conc, decay=decay, tresh=tresh, node=node)
@@ -130,10 +133,10 @@ class PldeModel( BoolModel ):
         """
         sep = ' ' * 4
 
-        indices = [ x[0] for x in self.mapper.values() ]
+        indices = [ x[0] for x in list(self.mapper.values()) ]
         assign  = [ 'c%d' % i for i in indices ]
         retvals = [ 'n%d' % i for i in indices ]
-        zeros   = map(lambda x: '0.0', indices ) 
+        zeros   = ['0.0' for x in indices] 
         assign  = ', '.join(assign)
         retvals = ', '.join(retvals)
         zeros   = ', '.join( zeros )
@@ -189,8 +192,8 @@ class PldeModel( BoolModel ):
                 os.remove( '%s.pyc' % autogen )
             except OSError:
                 pass # must be a read only filesystem
-            reload( autogen_mod )
-        except Exception, exc:
+            imp.reload( autogen_mod )
+        except Exception as exc:
             msg = "'%s' in:\n%s\n*** dynamic code error ***\n%s" % ( exc, self.dynamic_code, exc )
             util.error(msg)
 

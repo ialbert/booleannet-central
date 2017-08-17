@@ -1,6 +1,7 @@
-import util
-from ruleparser import Parser
-import tokenizer, util, state
+
+from . import util, state, tokenizer
+
+from .ruleparser import Parser
 
 class BoolModel(Parser):
     """
@@ -23,7 +24,7 @@ class BoolModel(Parser):
         self.states = self.parser.states = [ self.parser.old ]
 
         # parser the initial data
-        map( self.local_parse, self.init_lines )
+        list(map( self.local_parse, self.init_lines ))
 
         # deal with uninitialized nodes
         if self.uninit_nodes:
@@ -37,7 +38,7 @@ class BoolModel(Parser):
                 util.error( 'uninitialized nodes: %s' % list(self.uninit_nodes))
 
         # override any initalization with defaults
-        for node, value in defaults.items():
+        for node, value in list(defaults.items()):
             self.parser.RULE_SETVALUE( self.parser.old, node, value, None)
             self.parser.RULE_SETVALUE( self.parser.new, node, value, None)
         
@@ -63,7 +64,7 @@ class BoolModel(Parser):
         # this is an expensive operation so it loads lazily
         assert self.states, 'States are empty'
         if not self.lazy_data:
-            nodes = self.first.keys()
+            nodes = list(self.first.keys())
             for state in self.states:
                 for node in nodes:
                     self.lazy_data.setdefault( node, []).append( state[node] )
@@ -90,13 +91,13 @@ class BoolModel(Parser):
         # needs to be reset in case the data changes
         self.lazy_data = {}
 
-        for index in xrange(steps):
+        for index in range(steps):
             self.parser.RULE_START_ITERATION( index, self )
             self.state_update()
             for rank in self.ranks:
                 lines = self.update_lines[rank]
                 lines = shuffler( lines )
-                map( self.local_parse, lines ) 
+                list(map( self.local_parse, lines )) 
 
     def save_states(self, fname):
         """
@@ -104,11 +105,11 @@ class BoolModel(Parser):
         """
         if self.states:
             fp = open(fname, 'wt')
-            cols = [ 'STATE' ] + self.first.keys() 
+            cols = [ 'STATE' ] + list(self.first.keys()) 
             hdrs = util.join ( cols )
             fp.write( hdrs )
             for state in self.states:
-                cols = [ state.fp() ] + state.values()
+                cols = [ state.fp() ] + list(state.values())
                 line = util.join( cols )
                 fp.write( line )
             fp.close()
@@ -126,11 +127,11 @@ class BoolModel(Parser):
         index, size = self.detect_cycles()
         
         if size == 0:
-            print "No cycle or steady state could be detected from the %d states" % len(self.states)
+            print(("No cycle or steady state could be detected from the %d states" % len(self.states)))
         elif size==1:
-            print "Steady state starting at index %s -> %s" % (index, self.states[index] )
+            print(("Steady state starting at index %s -> %s" % (index, self.states[index] )))
         else:
-            print "Cycle of length %s starting at index %s" % (size, index)
+            print(("Cycle of length %s starting at index %s" % (size, index)))
     
     def fp(self):
         "The models current fingerprint"
@@ -154,18 +155,18 @@ if __name__ == '__main__':
 
     model.initialize(  )
         
-    print '>>>', model.first
+    print(('>>>', model.first))
 
     model.iterate( steps=2 )
     
-    print model.fp()
+    print((model.fp()))
     model.report_cycles()
     model.save_states( fname='states.txt' )
 
     # detect cycles from a list of states
     states = ['S1', 'S2', 'S1', 'S2', 'S1', 'S2']
-    print 
-    print 'States %s -> Detect cycles %s' % (states, util.detect_cycles( states ) )
+    print() 
+    print(('States %s -> Detect cycles %s' % (states, util.detect_cycles( states ) )))
 
 
        

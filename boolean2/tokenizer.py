@@ -3,8 +3,8 @@ Main tokenizer.
 """
 from itertools import *
 import sys, random
-import util
-import ply.lex as lex
+from . import util
+from .ply import lex
 
 class Lexer:
     """
@@ -85,7 +85,7 @@ class Lexer:
     
     def tokenize_text(self, text):
         "Runs the lexer on text and returns a list of lists of tokens"
-        return map( self.tokenize_line, util.split(text) )
+        return list(map( self.tokenize_line, util.split(text) ))
 
 def init_tokens( tokenlist ):
     """
@@ -93,7 +93,7 @@ def init_tokens( tokenlist ):
     """
     def cond( elem ):
         return elem[1].type == 'EQUAL'
-    return filter( cond, tokenlist)
+    return list(filter( cond, tokenlist))
 
 def label_tokens( tokenlist ):
     """
@@ -102,7 +102,7 @@ def label_tokens( tokenlist ):
     """
     def cond( elem ):
         return elem[0].type == 'LABEL'
-    return filter( cond, tokenlist)
+    return list(filter( cond, tokenlist))
 
 def async_tokens( tokenlist ):
     """
@@ -111,7 +111,7 @@ def async_tokens( tokenlist ):
     """
     def cond( elem ):
         return elem[1].type == 'ASSIGN'
-    return filter( cond, tokenlist)
+    return list(filter( cond, tokenlist))
 
 def update_tokens( tokenlist ):
     """
@@ -119,7 +119,7 @@ def update_tokens( tokenlist ):
     """
     def cond( elem ):
         return elem[1].type == 'ASSIGN' or elem[2].type == 'ASSIGN'
-    return filter( cond, tokenlist)
+    return list(filter( cond, tokenlist))
 
 def get_nodes( tokenlist ):
     """
@@ -132,7 +132,7 @@ def get_nodes( tokenlist ):
     def get( token):
         return token.value
 
-    nodes = map(get, filter( cond, chain( *tokenlist )))
+    nodes = list(map(get, list(filter( cond, chain( *tokenlist )))))
     nodes = set(nodes)
     util.check_case( nodes )
     return nodes
@@ -197,7 +197,7 @@ def modify_states( text, turnon=[], turnoff=[] ):
     tokens  = tokenize( text )
 
     init = init_tokens( tokens )
-    init_lines = map(tok2line, init)
+    init_lines = list(map(tok2line, init))
 
     # override the initial values
     init_lines.extend( [ '%s=True'  % node for node in turnon  ] )
@@ -230,6 +230,6 @@ if __name__ == '__main__':
 
     """
     
-    print modify_states( text, turnon=['A', 'B'], turnoff=['C'] )
+    print((modify_states( text, turnon=['A', 'B'], turnoff=['C'] )))
 
     

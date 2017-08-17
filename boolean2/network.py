@@ -1,4 +1,5 @@
-import util
+
+from . import util
 import random
 from itertools import count
 
@@ -79,7 +80,7 @@ class TransGraph(object):
         "Adds states to the transition"
     
         # generating the fingerprints and sto
-        times = times or range(len(states))
+        times = times or list(range(len(states)))
         fprints = []
         for state in states:
             if self.verbose:
@@ -105,19 +106,19 @@ class TransGraph(object):
         self.fp.write( '*** node values ***\n' )
 
         # writes the mapping
-        first = self.store.values()[0]
-        header = [ 'state' ] + first.keys()
+        first = list(self.store.values())[0]
+        header = [ 'state' ] + list(first.keys())
         self.fp.write( util.join(header) )
         
         for fprint, state in sorted( self.store.items() ):
-            line = [ fprint ]  + map(int, state.values() )
+            line = [ fprint ]  + list(map(int, list(state.values()) ))
             self.fp.write( util.join(line) )
 
 def test():
     """
     Main testrunnner
     """
-    import boolmodel
+    from . import boolmodel
     
     text = """
     A = True
@@ -132,7 +133,7 @@ def test():
     model.iterate( steps = 5 )
     
     #for state in model.states:
-    #    print state
+    #    print (state)
 
     trans = TransGraph( logfile='states.txt' ) 
     trans.add( model.states )

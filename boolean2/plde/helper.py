@@ -1,7 +1,8 @@
 """
 Helper functions
 """
-import csv, StringIO
+import csv
+from io import StringIO
 import string
 from itertools import *
 
@@ -14,7 +15,7 @@ except:
     pass
 """
 
-from defs import *
+from .defs import *
 
 def change(node, indexer):
     "Returns the change for a node"
@@ -58,7 +59,7 @@ def hill_func( node, indexer, par):
     index = indexer[node]
     try:
         text = ' hill( c%d, h=%s, n=%s ) ' % ( index, par[node].h, par[node].n )
-    except Exception, exc:
+    except Exception as exc:
         msg = "error creating hill function for node %s -> %s" % (node, exc)
         raise Exception(msg)
     return text
@@ -71,7 +72,7 @@ def prop_func( node, indexer, par):
     try:
         nconc = conc(node, indexer)
         text = ' prop( r=%s, rc=%s ) - %s ' % ( par[node].r, par[node].rc, nconc )
-    except Exception, exc:
+    except Exception as exc:
         msg = "error creating proportion function for node %s -> %s" % (node, exc)
         raise Exception(msg)
     return text
@@ -132,7 +133,7 @@ def initializer(data, labels=None, **kwds):
         try:
             values = [ data[node][label] for label in labels ]
             return tuple(values) 
-        except KeyError, exc:
+        except KeyError as exc:
             
             if 'default' in kwds:
                 return kwds['default']
@@ -189,10 +190,10 @@ def read_parameters( fname ):
     
     def something( row ):
         # skips rows with empty elements
-        return filter(lambda x:x, map(string.strip, row ))
+        return [x for x in map(string.strip, row ) if x]
     
     # load the file, skipping commented or empty rows
-    lines = filter( something, csv.reader( CommentedFile(fname))) 
+    lines = list(filter( something, csv.reader( CommentedFile(fname)))) 
 
     # check file size 
     assert len(lines) > 2, "file '%s' needs to have more than two lines" % fname
@@ -205,7 +206,7 @@ def read_parameters( fname ):
             raise Exception( "column number mismatch expected %d, found %s, at line '%s'" % (size, colnum, ', '.join(elems)))
         return True
     
-    lines = filter( coltest, lines )
+    lines = list(filter( coltest, lines ))
     
     # nodes and attributes
     nodes, attrs = lines[0:2]
@@ -213,7 +214,7 @@ def read_parameters( fname ):
     # tries to coerce the value into a datastructure, float tuples, float or string
     def tuple_cast( word ):
         try:
-            values = map( float, word.split(',') )
+            values = list(map( float, word.split(',') ))
             if len( values ) > 1 :
                 return tuple(values)
             else:
@@ -241,10 +242,10 @@ class CommentedFile:
             fp = file(fp, 'rU')
         self.fp = fp
 
-    def next(self):
-        line = self.fp.next()
+    def __next__(self):
+        line = next(self.fp)
         while line.startswith('#'):
-            line = self.fp.next()
+            line = next(self.fp)
         return line
 
     def __iter__(self):

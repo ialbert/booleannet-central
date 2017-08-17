@@ -29,7 +29,7 @@ class State(object):
 
     def __repr__(self):  
         "Default string format"
-        items = [ '%s=%s' % x for x in self.items() ]
+        items = [ '%s=%s' % x for x in list(self.items()) ]
         items = ', '.join(items)
         return 'State: %s' % items
    
@@ -39,14 +39,14 @@ class State(object):
 
     def keys(self):
         "Returns the sorted keys"
-        return [ x for x,y in self.items() ]
+        return [ x for x,y in list(self.items()) ]
 
     def values(self):
         "Returns the values by sorted keys"
-        return [ y for x,y in self.items() ]
+        return [ y for x,y in list(self.items()) ]
 
     def __iter__(self):
-        return iter( self.keys() )
+        return iter( list(self.keys()) )
 
     def copy(self):            
         "Duplicates itself"
@@ -69,7 +69,7 @@ class State(object):
     
     def bin( self ):
         "A binary representation of the states"
-        values = map(str, map(int, self.values()))
+        values = list(map(str, list(map(int, list(self.values())))))
         return ''.join(values)
 
 def bit2int(bits):
@@ -123,10 +123,10 @@ def all_initial_states( nodes, limit=None ):
     def generator( nodes ):
         nodes = list(sorted(nodes))
         size  = len(nodes)
-        for index in xrange( 2 ** size ):
+        for index in range( 2 ** size ):
             bits  = int2bit(index, w=size )
-            bools = map(bool, bits)
-            store = dict( zip(nodes, bools) )
+            bools = list(map(bool, bits))
+            store = dict( list(zip(nodes, bools)) )
             def lookup( node ):
                 return store[node]
             yield store, lookup
@@ -147,5 +147,5 @@ if __name__ == '__main__':
     gen = all_initial_states(nodes)
 
     for data, func in gen:
-        print map(func, nodes)
+        print((list(map(func, nodes))))
 

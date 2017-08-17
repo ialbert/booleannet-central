@@ -6,15 +6,15 @@ import sys, re, os
 
 __VERSION__ = '1.2.0-beta'
 
-import util
+from . import util
 
 # require python 2.4 or higher
 if sys.version_info[:2] < (2, 5):
     util.error("this program requires python 2.5 or higher" )
 
-import ruleparser, boolmodel, timemodel, tokenizer
+from . import ruleparser, boolmodel, timemodel, tokenizer
 
-from tokenizer import modify_states
+from .tokenizer import modify_states
 
 def Model( text, mode):
     "Factory function that returns the proper class based on the mode"
@@ -33,7 +33,7 @@ def Model( text, mode):
     elif mode == ruleparser.PLDE:
         # matplotlib may not be installed 
         # so defer import to allow other modes to be used
-        from plde import model
+        from .plde import model
         return model.PldeModel( mode='plde', text=text)
     else:
         return boolmodel.BoolModel( mode=mode, text=text )
@@ -58,9 +58,9 @@ def test():
     model.initialize(  )
     model.iterate( steps=10, fullt=2)
     
-    print all_nodes ( text )
+    print((all_nodes ( text )))
     #for i in range(12):
-    #    print model.next()
+    #    print (model.next()
 
 if __name__ == '__main__':
     test()
