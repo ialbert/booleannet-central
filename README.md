@@ -1,3 +1,5 @@
+# BooleanNet - Boolean network simulations
+
 `booleannet` is a training tool that makes use of existing Boolean network models, methods and algorithms.
 
 It installs the `bnet` command line tool that implements a number of subcommands.
