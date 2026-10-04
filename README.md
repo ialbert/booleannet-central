@@ -1,118 +1,130 @@
-# Boolean Network Modeling
+BooleanNet is a training tool that makes use of existing Boolean network models, methods and algorithms.
 
-The goal of this software package is to provide intuitive and accessible tools for simulating *biological regulatory networks*
-in a boolean formalism. Using this simulator biologist and bioinformaticians can specify their system in a simple textual language then
-explore various dynamic behaviors via a web interface or an application programming interface (API) each designed to facilitate scientific discovery,
-data collection and reporting.
+Website: https://www.booleannet.com/
 
-Latest release *1.2.7*, April 24th, 2014
+## Environment setup
 
-# Installation instructions
+`booleannet` does not automatically install all of its dependencies. We recommend using [pixi][pixi] as a virtual environment manager. Here is a minimal example on how to set up a pixi enviroment:
 
-The code requires Python 2.7. The simplest installation works through the [conda][conda] installer that can maintain different versions of Python on the same machine. 
-
-The first step is to install [conda][conda] if you don't already have it. Once conda is installed, from a command line do the following:
-
-[conda]: https://docs.conda.io/en/latest/miniconda.html
-
+```bash
+pixi init
+pixi add python=3.12 pip graphviz
+pixi run pip install git+https://github.com/hklarner/pyboolnet@3.0.16
+pixi shell
 ```
-# Create the python 2 environment.
-conda create --name py2 python=2.7
 
-# Activate the environment
-conda activate py2
+Your enviroment is now set up with the necessary dependencies to use `booleannet`.
 
-# Install matplotlib version 2.2
-conda install matplotlib=2
+[pixi]: https://pixi.prefix.dev/latest/
 
-# Install Booleannet
+## Install booleannet
+
+Inside the environment, install `booleannet` with:
+
+```bash
 pip install booleannet
 ```
 
-You can verify the installation by running test simulations:
+It installs the `bnet` command line tool that implements a number of subcommands.
+
+Run `bnet` with no arguments to see the available subcommands:
 
 ```
-# Download a test simulation
-wget https://raw.githubusercontent.com/ialbert/booleannet/master/examples/projects/LGL/LGL-simulation.py
+Usage: bnet [OPTIONS] COMMAND [ARGS]...
 
-# Run the test simulation 
-python LGL-simulation.py
+  BooleanNet command line tools.
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  graphviz  Generates a Graphviz graph from a model.
+  models    List model summaries, or print one model in the chosen format.
 ```
 
-Bugfix Note
------------
+Add `--help` to any subcommand to see all available options.
 
-January 7, 2010. Please note that versions 1.2.0 to 1.2.4 of the BooleanNet package have  a bug that cause the node updates to execute in original (listed) order during the first iteration, before randomizing the order of nodes for subsequent iterations. This bug affects only the asynchronous update mechanism. 
+## bnet models: manage known models
 
-The net effect of the bug is that for certain type of rules the first execution of them may funnel the states into the basin of one of the attractors. Overall the answers will not be incorrect but, depending on the rules and order of nodes they may be incomplete. Please update to the latest version. My apologies. Istvan Albert
+The `bnet models` subcommand operates on models from the [Biodivine Boolean Models (BBM) Benchmark Dataset][bbmb].
 
-Publication
------------
+[bbmb]: https://bbm.sybila.fi.muni.cz/
 
-[Boolean network simulations for life scientist](http://www.scfbm.org/content/3/1/16) by István Albert, Juilee Thakar, Song Li, Ranran Zhang, and Réka Albert in *Source Code for Biology and Medicine (2008)* 
+```bash
+# List all models
+bnet models | head
+```
 
-Introduction
-------------
+prints models by increasing number of variables:
 
-When trying to understand the role and functioning of a regulatory network,
-the first step is to assemble the components of the network and the interactions
-between them. The experimental advances in the large scale mapping of regulatory networks are fairly recent, but modeling efforts date back to the end of 1960s thanks to the pioneering work of Stuart Kauffman and Rene Thomas.
+```
+id   name                                                   var    in    reg
+165  EGGSHELL-PATTERNING-PHENOMOENOLOGICAL                    4     4     16
+170  DROSOPHILA-GAP-B                                         4     3     15
+007  CORTICAL-AREA-DEVELOPMENT                                5     0     14
+109  ASYMMETRIC-CELL-DIVISION-A                               5     0     15
+169  DROSOPHILA-GAP-A                                         5     2     17
+171  DROSOPHILA-GAP-C                                         5     2     20
+172  DROSOPHILA-GAP-D                                         5     2     12
+184  P53-MDM2-NETWORK                                         5     1     15
+189  TRP-BIOSYNTHESIS                                         5     1     13
+...
+```
 
-In a Boolean representation we assume that nodes are equivalent, and their interactions form a directed graph in which each node receives inputs from its neighbors (nodes that are connected to it). The state of nodes is described by binary (ON/OFF) variables, and the dynamic behavior of each variable, that is, whether it will be ON or OFF at next moment, is governed by a Boolean function. In general, a Boolean or logical function is written as a statement acting on the inputs using the logical operators *and*, *or* and *not* and its output is ON(OFF) if the statement is true (false).
+To get the rules for a specific model:
 
+```bash
+# Get rules for model 7
+bnet models 7
+```
 
-Documentation
---------------
+prints:
 
-A detailed documentation] is available in the `docs` folder. 
+```
+Coup_fti* = not (Fgf8 or Sp8) or not (Sp8 or Fgf8)
+Emx2* = Coup_fti and not (Fgf8 or Sp8 or Pax6)
+Fgf8* = Fgf8 and Sp8 and not Emx2
+Pax6* = Sp8 and not (Emx2 or Coup_fti)
+Sp8* = Fgf8 and not Emx2
+```
 
+You can also get the rules for a model by name:
 
-About the library
------------------
+```bash
+# Get rules for model by name
+bnet models CORTICAL-AREA-DEVELOPMENT
+```
 
-*Note* as of version 1.2 (Nov 12, 2008) the library has acquired several new features (see below) and underwent a substantial reorganization. To keep old code from interfering with new one the library namespace has been changed to *boolean2*
+Get the rules in other formats:
 
-In this software package, we implement mutliple advanced methodologies which combine discrete logical rules with more realistic assumptions regarding the relative timescales of the  processes:
+```bash
+# Get model 7 in BNet format
+bnet models 7 -f bnet
+```
 
-  * *synchronous* updates are performed in listed order, but the states change only at the end of the update round
-  * *asynchronous* updates are performed in random order and the states immediately reflect the changes, this makes the model stochastic. 
-  * *ranked asynchronous* updates are performed in rank order, within the same rank the updates take place asynchronously
-  * *time synchronous* update are performed in time. Each rule has a time delay associated with them, updates take place at multiples of these delays
-  * *piece wise differential* updates associate a set of continuous variables (concentrations, decay rates and thresholds) to each discrete variable in the system. The dynamics of these continuous variables is determined by a _linear system of piecewise differential equations_, leading to a *hybrid model* in the manner first suggested by Leon Glass and collaborators.
+## bnet graphviz: visualize a model
 
-http://booleannet.googlecode.com/svn/webdata/example-hybrid-override.png
+```bash
+# If you have a model in a file
+bnet graphviz -i model.txt
+```
 
-Example Rules
--------------
+```bash
+# You can pipe the rule to graphviz
+bnet models CORTICAL-AREA-DEVELOPMENT | bnet graphviz
+```
 
-Here are a few example rules for *BooleanNet* covering various research projects. Most of these rules were collected via a thorough literature search and were manually curated into their final form. These rules are available in the *examples/samples* directory of the source code distribution.
+## Convert BBMB to JSON
 
+This is used internally to transform the BBMB model repository to a single JSON file.
 
- * Rules for abscicis acid induced stomatal closure in plants  *[http://booleannet.googlecode.com/svn/webdata/aba.txt aba.txt]* published as _Song Li, Sarah Assmann and Réka Albert *Predicting essential components of signal transduction networks: dynamic model of guard cell abscisic acid signaling* PLoS Biology 4 (10): e312, 2006_
- 
- * Rules for T-cell large granular lymphocyte leukemia simulation  *[http://booleannet.googlecode.com/svn/webdata/LGL.txt LGL.txt]* published as _Ranran Zhang, Mithun Vinod Shah, Jun Yang, Susan B. Nyland, Xin Liu, Jong K. Yun, Réka Albert, and Thomas P. Loughran, Jr. *Network Model of Survival Signaling in LGL Leukemia* PNAS, 2008 (to appear)_
+Skips a few large models that make the file too large.
 
- * Rules for mammalian immune response to B. bronchiseptica infection  *[http://booleannet.googlecode.com/svn/webdata/immune.txt immune.txt]* published as _J. Thakar, M. Pilione, G. Kirimanjeswara, E. Harvill and R. Albert *Modeling Systems-Level Regulation of Host Immune Responses* PLoS Computational Biology 6, e109 (2007_
- 
-Some of the resulting plots based on the rules above:
+```bash
+python booleannet/bbm2json.py \
+       --summary ~/src/biodivine-boolean-models/models/summary.csv 
+       --models ~/src/biodivine-boolean-models/models 
+       --skip 253,248,79,261,256
+       --output models.json.gz
+```
 
-http://booleannet.googlecode.com/svn/webdata/footer.png 
-
-Credits
--------
-
-The library has been designed and implemented by *[http://www.personal.psu.edu/iua1/ István Albert]* using previous work, ideas and contributions from:
-  * *Song Li*
-  * *[http://www.phys.psu.edu/%7Ejthakar/ Juilee Thakar]*
-  * *Ranran Zhang*
-  * *Assieh Saadatpour Moghaddam* 
-
-None of us would be thinking about Boolean Networks if it weren't for *[http://www.phys.psu.edu/~ralbert/ Réka Albert]*.
-
-Our software relies on the following third party libraries that are distributed with  the software:
-
-  * [http://www.dabeaz.com/ply/ PLY] by *David Beazley*
-
-The following library must be also installed if the engine will be used in `plde` mode (piece-wise linear differential equations):
-
-  * [http://matplotlib.sourceforge.net/ matplotlib] by Dave Hunter

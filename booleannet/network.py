@@ -1,4 +1,4 @@
-from boolean2 import util
+from booleannet import util
 import random
 from itertools import count
 
@@ -117,7 +117,7 @@ def test():
     """
     Main testrunnner
     """
-    from boolean2 import boolmodel
+    from booleannet import boolmodel
     
     text = """
     A = True

@@ -1,0 +1,3 @@
+B* = A or C
+C* = A and not D
+D* = B and C

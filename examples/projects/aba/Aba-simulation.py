@@ -74,7 +74,7 @@ if __name__ == '__main__':
     REPEAT = 300
     STEPS  = 10
     FULLT  = 10
-    text = file( 'ABA.txt').read()
+    text = open('ABA.txt').read()
     data = find_stdev( text=text, node='Closure',knockouts='WT pHc PA'.split(), repeat=REPEAT, steps=STEPS)
     
     muts = run_mutations( text, repeat=REPEAT, steps=STEPS )

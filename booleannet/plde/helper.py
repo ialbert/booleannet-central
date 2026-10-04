@@ -238,7 +238,7 @@ class CommentedFile:
     """
     def __init__(self, fp):
         if isinstance(fp, str):
-            fp = file(fp, 'rU')
+            fp = open(fp)
         self.fp = fp
 
     def __next__(self):

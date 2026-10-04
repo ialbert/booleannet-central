@@ -6,7 +6,7 @@ import sys, unittest
 # path fixup to insert the most current path when developing
 sys.path.insert(0, '..' )
 
-import boolean2
+import booleannet
 
 #
 # helper functions
@@ -22,7 +22,7 @@ def get_states( mode, text, steps, missing=None):
     """
     Helper function that generates the states based on 
     """
-    model  = boolean2.Model( mode=mode, text=text )
+    model  = booleannet.Model( mode=mode, text=text )
     model.initialize( missing=missing )
     model.iterate( steps=steps )
     return model.states

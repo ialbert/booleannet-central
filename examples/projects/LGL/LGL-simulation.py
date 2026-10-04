@@ -48,7 +48,7 @@ def run( text, nodes, repeat, steps ):
 if __name__ == '__main__':
 
     # read in the text
-    text = file( 'LGL.txt').read()
+    text = open('LGL.txt').read()
 
     # the nodes of interest that are collected over the run
     # NODES  = 'Apoptosis STAT3 FasL Ras'.split()

@@ -1,6 +1,6 @@
-from boolean2 import util
-from boolean2 import ruleparser
-from boolean2.boolmodel import BoolModel
+from booleannet import util
+from booleannet import ruleparser
+from booleannet.boolmodel import BoolModel
 
 class TimeModel( BoolModel ):
 

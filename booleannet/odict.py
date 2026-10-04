@@ -5,7 +5,7 @@
 #
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/496761
 #
-from collections import MutableMapping as DictMixin
+from collections.abc import MutableMapping as DictMixin
 
 class odict(DictMixin):
     """
@@ -19,17 +19,6 @@ class odict(DictMixin):
     [(2, 20), (1, 10)]
     >>> [ x for x in o ]
     [2, 1]
-    >>>
-    >>> d = dict()
-    >>> d[2]=20 ; d[1]=10
-    >>> d.keys()
-    [1, 2]
-    >>> d.values()
-    [10, 20]
-    >>> d.items()
-    [(1, 10), (2, 20)]
-    >>> [ x for x in d ]
-    [1, 2]
 
     """
     def __init__(self, **kwds):
@@ -49,9 +38,21 @@ class odict(DictMixin):
     def __delitem__(self, key):
         del self._data[key]
         self._keys.remove(key)
-        
+
+    def __iter__(self):
+        return iter(self._keys)
+
+    def __len__(self):
+        return len(self._keys)
+
     def keys(self):
         return list(self._keys)
+
+    def values(self):
+        return [self._data[key] for key in self._keys]
+
+    def items(self):
+        return [(key, self._data[key]) for key in self._keys]
     
     def copy(self):
         copyDict = odict()

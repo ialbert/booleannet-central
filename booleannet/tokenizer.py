@@ -3,8 +3,8 @@ Main tokenizer.
 """
 from itertools import *
 import sys, random
-from boolean2 import util
-from boolean2.ply import lex
+from booleannet import util
+from ply import lex
 
 
 class Lexer:
@@ -33,7 +33,7 @@ class Lexer:
         self.lexer = lex.lex(object=self, **kwargs)
 
     def t_ID( self, t):
-        "[a-zA-Z_\+\-][a-zA-Z_0-9\+\-]*"
+        r"[a-zA-Z_\+\-][a-zA-Z_0-9\+\-]*"
 
         # check for reserved words
         t.type = self.reserved.get( t.value, 'ID')    
@@ -45,7 +45,7 @@ class Lexer:
         return t
    
     def t_NUMBER(self, t):
-        "[\+-]*\d+\.?\d*"
+        r"[\+-]*\d+\.?\d*"
         try:
             t.value = float(t.value)
         except ValueError:

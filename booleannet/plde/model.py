@@ -1,17 +1,12 @@
 
-import sys, os
+import importlib
+import os
 from itertools import *
 
-from boolean2.boolmodel import BoolModel
-from boolean2 import util, odict, tokenizer
+from booleannet.boolmodel import BoolModel
+from booleannet import util, odict, tokenizer
 from . import helper
-import imp
-
-try:
-    import pylab
-    from pylab import arange, rk4
-except ImportError:
-    util.error( "matplotlib is missing, install it from: http://matplotlib.sourceforge.net/")
+from .rk4 import rk4
 
 def default_override( node, indexer, tokens ):
     """
@@ -102,7 +97,13 @@ class PldeModel( BoolModel ):
             init.append( line )
         
         if localdefs:
-            init.extend( [ '# custom imports', 'import %s' % localdefs, 'reload(%s)' % localdefs, 'from %s import *' % localdefs ]   )
+            init.extend([
+                '# custom imports',
+                'import importlib',
+                'import %s' % localdefs,
+                'importlib.reload(%s)' % localdefs,
+                'from %s import *' % localdefs,
+            ])
 
         init_text = '\n'.join( init )
         return init_text
@@ -185,12 +186,12 @@ class PldeModel( BoolModel ):
             fp.write( '%s\n' % self.init_text )
             fp.write( '%s\n' % self.func_text )
             fp.close()
-            autogen_mod = __import__( autogen )
+            autogen_mod = importlib.import_module(autogen)
             try:
                 os.remove( '%s.pyc' % autogen )
             except OSError:
                 pass # must be a read only filesystem
-            imp.reload( autogen_mod )
+            importlib.reload(autogen_mod)
         except Exception as exc:
             msg = "'%s' in:\n%s\n*** dynamic code error ***\n%s" % ( exc, self.dynamic_code, exc )
             util.error(msg)

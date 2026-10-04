@@ -36,7 +36,7 @@ def local_override( node, indexer, tokens ):
 #
 # there will be two models, one for WT and the other for a BC knockout
 #
-wt_text = file('Bb.txt').read()
+wt_text = open('Bb.txt').read()
 bc_text = boolean2.modify_states( text=wt_text, turnoff= [ "BC"  ] )
 
 model1 = Model( text=wt_text, mode='plde' )
