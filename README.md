@@ -22,7 +22,7 @@ Your environment is now set up with initial dependencies to use `booleannet`.
 Inside the environment, install `booleannet` with:
 
 ```bash
-pip install booleannet
+pip install --upgrade booleannet
 ```
 
 It installs the `bnet` command line tool that implements a number of subcommands.
@@ -40,6 +40,7 @@ Options:
 Commands:
   graphviz  Generates a Graphviz graph from a model.
   models    List model summaries, or print one model in the chosen format.
+  simulate  Run a synchronous or asynchronous simulation.
 ```
 
 Add `--help` to any subcommand to see all available options.
@@ -102,6 +103,56 @@ Get the rules in other formats:
 bnet models 7 -f bnet
 ```
 
+## bnet simulate: run a model
+
+Suppose your `model.txt` contains:
+
+```
+B* = A or C
+C* = A and not D
+D* = B and C
+```
+
+Then you can run the model with:
+
+```bash
+# Rules from a file. Sets initial state to A and B (random). Runs for 5 steps.
+bnet simulate model.txt A=1 B=? -n 5
+```
+
+On row per iteration, and one column per node. The first row is the initial state. `1` is on, `.` is off. It sets a random initial state for any node that is not set explicitly.
+
+
+```
+# Random initial state for C, D
+A B C D
+1 1 . 1
+1 1 . .
+1 1 1 .
+1 1 1 1
+1 1 . 1
+1 1 . .
+```
+
+You can send a file via stdin and pipe into the simulation:
+
+```bash
+bnet models CORTICAL-AREA-DEVELOPMEN | bnet simulate Pax6=0 Emx2=1 Fgf8=1 Sp8=0 Coup_fti=1 -n 4
+```
+
+prints:
+
+```
+Coup_fti Emx2 Fgf8 Pax6 Sp8
+1 1 1 . .
+. . . . .
+1 . . . .
+1 1 . . .
+1 1 . . .
+```
+
+The default mode is `sync`. The `-m async` option uses asynchronous updates. 
+
 ## bnet graphviz: visualize a model
 
 ```bash
@@ -113,6 +164,7 @@ bnet graphviz -i model.txt
 # You can pipe the rule to graphviz
 bnet models CORTICAL-AREA-DEVELOPMENT | bnet graphviz
 ```
+
 
 ## Convert BBMB to JSON
 

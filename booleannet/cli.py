@@ -13,8 +13,26 @@ COMMANDS = {
     "simulate": simulate,
 }
 
+HELP = {"help_option_names": ["-h", "--help"]}
 
-@click.group("bnet", no_args_is_help=True)
+
+class BnetGroup(click.Group):
+    def format_commands(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
+        super().format_commands(ctx, formatter)
+        blocks = []
+        for name in self.list_commands(ctx):
+            cmd = self.get_command(ctx, name)
+            if cmd is None or cmd.hidden:
+                continue
+            sub = click.Context(cmd, info_name=name, parent=ctx)
+            blocks.append(cmd.get_help(sub))
+        if blocks:
+            formatter.write("\n\n")
+            formatter.write("\n\n".join(blocks))
+            formatter.write("\n")
+
+
+@click.group("bnet", cls=BnetGroup, no_args_is_help=True, context_settings=HELP)
 def main() -> None:
     """BooleanNet command line tools."""
 
