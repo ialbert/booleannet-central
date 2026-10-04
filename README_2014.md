@@ -37,7 +37,9 @@ The net effect of the bug is that for certain type of rules the first execution 
 Publication
 -----------
 
-[Boolean network simulations for life scientist](http://www.scfbm.org/content/3/1/16) by István Albert, Juilee Thakar, Song Li, Ranran Zhang, and Réka Albert in *Source Code for Biology and Medicine (2008)* 
+[Boolean network simulations for life scientist][1751-0473-3-16] by István Albert, Juilee Thakar, Song Li, Ranran Zhang, and Réka Albert in *Source Code for Biology and Medicine (2008)* 
+
+[1751-0473-3-16]: https://link.springer.com/article/10.1186/1751-0473-3-16
 
 Introduction
 ------------

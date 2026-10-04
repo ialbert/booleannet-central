@@ -4,6 +4,12 @@ It installs the `bnet` command line tool that implements a number of subcommands
 
 Github repository: <https://github.com/ialbert/booleannet-central>
 
+The software was first published as [Boolean network simulations for life scientists][1751-0473-3-16] by István Albert, Juilee Thakar, Song Li, Ranran Zhang, and Réka Albert in *Source Code for Biology and Medicine* (2008). The field has moved on and developedsince that paper, and BooleanNet is now a tool better suited for learning and exploring Boolean networks. 
+
+For a more detailed history of the software, see [README_2014.md](README_2014.md).
+
+[1751-0473-3-16]: https://link.springer.com/article/10.1186/1751-0473-3-16
+
 ## Environment setup
 
 `booleannet` works with many libraries, but not everyone needs all of them, so optional dependencies are not installed automatically. We recommend [pixi][pixi] as a virtual environment manager. Here is a minimal example of how to set up a pixi environment:
