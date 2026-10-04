@@ -141,7 +141,7 @@ A B C D
 You can send a file via stdin and pipe into the simulation:
 
 ```bash
-bnet models CORTICAL-AREA-DEVELOPMEN | bnet simulate Pax6=0 Emx2=1 Fgf8=1 Sp8=0 Coup_fti=1 -n 4
+bnet models CORTICAL-AREA-DEVELOPMENT | bnet simulate Pax6=0 Emx2=1 Fgf8=1 Sp8=0 Coup_fti=1 -n 4
 ```
 
 prints:
