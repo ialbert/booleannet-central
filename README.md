@@ -2,6 +2,8 @@ BooleanNet is a training tool that makes use of existing Boolean network models,
 
 It installs the `bnet` command line tool that implements a number of subcommands.
 
+Github repository: <https://github.com/ialbert/booleannet-central>
+
 ## Environment setup
 
 `booleannet` works with many libraries, but not everyone needs all of them, so optional dependencies are not installed automatically. We recommend [pixi][pixi] as a virtual environment manager. Here is a minimal example of how to set up a pixi environment:
