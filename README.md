@@ -4,7 +4,7 @@ Website: https://www.booleannet.com/
 
 ## Environment setup
 
-`booleannet` does not automatically install all of its dependencies. We recommend using [pixi][pixi] as a virtual environment manager. Here is a minimal example on how to set up a pixi enviroment:
+`booleannet` works with many libraries, but not everyone needs all of them, so optional dependencies are not installed automatically. We recommend [pixi][pixi] as a virtual environment manager. Here is a minimal example of how to set up a pixi environment:
 
 ```bash
 pixi init
@@ -13,7 +13,7 @@ pixi run pip install git+https://github.com/hklarner/pyboolnet@3.0.16
 pixi shell
 ```
 
-Your enviroment is now set up with the necessary dependencies to use `booleannet`.
+Your environment is now set up with initial dependencies to use `booleannet`.
 
 [pixi]: https://pixi.prefix.dev/latest/
 

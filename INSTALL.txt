@@ -1,5 +1,0 @@
-
-Type:
-
-python setup.py install 
-
