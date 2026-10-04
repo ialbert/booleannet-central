@@ -155,7 +155,7 @@ Coup_fti Emx2 Fgf8 Pax6 Sp8
 1 1 . . .
 ```
 
-The default mode is `sync`. The `-m async` option uses asynchronous updates. You can pass the initial conditions from a file with the `--init` option.
+The default mode is `sync`. The `-m async` option uses random order asynchronous updates. You can pass the initial conditions from a file with the `--init` option.
 
 ## graphviz: visualize a model
 
