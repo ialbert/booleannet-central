@@ -51,7 +51,7 @@ Commands:
 
 Add `--help` to any subcommand to see all available options.
 
-## bnet models: manage known models
+## models: manage known models
 
 The `bnet models` subcommand operates on models from the [Biodivine Boolean Models (BBM) Benchmark Dataset][bbmb].
 
@@ -109,7 +109,7 @@ Get the rules in other formats:
 bnet models 7 -f bnet
 ```
 
-## bnet simulate: run a model
+## simulate: run a model
 
 Suppose your `model.txt` contains:
 
@@ -159,7 +159,7 @@ Coup_fti Emx2 Fgf8 Pax6 Sp8
 
 The default mode is `sync`. The `-m async` option uses asynchronous updates. 
 
-## bnet graphviz: visualize a model
+## graphviz: visualize a model
 
 ```bash
 # If you have a model in a file
