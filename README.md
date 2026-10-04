@@ -1,10 +1,10 @@
-BooleanNet is a training tool that makes use of existing Boolean network models, methods and algorithms.
+`booleannet` is a training tool that makes use of existing Boolean network models, methods and algorithms.
 
 It installs the `bnet` command line tool that implements a number of subcommands.
 
 Github repository: <https://github.com/ialbert/booleannet-central>
 
-The software was first published as [Boolean network simulations for life scientists][1751-0473-3-16] by István Albert, Juilee Thakar, Song Li, Ranran Zhang, and Réka Albert in *Source Code for Biology and Medicine* (2008). The field has moved on and developedsince that paper, and BooleanNet is now a tool better suited for learning and exploring Boolean networks. 
+The software was first published as [Boolean network simulations for life scientists][1751-0473-3-16] by *István Albert*, *Juilee Thakar*, *Song Li*, *Ranran Zhang*, and *Réka Albert* in *Source Code for Biology and Medicine (2008)*. The field has moved on and developed quite a bit since the paper. The `booleannet` package is now a tool better suited for learning and exploring Boolean networks. 
 
 For a more detailed history of the software, see [README_2014.md](README_2014.md).
 
