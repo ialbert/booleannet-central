@@ -1,4 +1,4 @@
-# BooleanNet - Boolean network simulations
+# Booleannet - Boolean network simulations
 
 `booleannet` is a training tool that makes use of existing Boolean network models, methods and algorithms.
 
