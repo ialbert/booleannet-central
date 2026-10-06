@@ -2,7 +2,7 @@
 authors = ["Istvan Albert <istvan.albert@gmail.com>"]
 channels = ["conda-forge", "bioconda"]
 name = "booleannet-central"
-platforms = ["linux-64", "osx-arm64"]
+platforms = ["linux-64", "osx-arm64", "osx-64"]
 version = "0.1.0"
 
 [tasks]
@@ -13,3 +13,8 @@ pip = ">=26.2.1,<27"
 dust = ">=1.2.6,<2"
 matplotlib = ">=3.11.2,<4"
 uv = ">=0.12.21,<0.13"
+graphviz = ">=14.1.2,<15"
+pandas = ">=3.0.6,<4"
+clingo = "==5.7"
+pydot = ">=4.0.1,<5"
+pygraphviz = ">=2.0.3,<3"
