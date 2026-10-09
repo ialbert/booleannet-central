@@ -21,9 +21,10 @@ pixi run pip install git+https://github.com/hklarner/pyboolnet@3.0.16
 pixi shell
 ```
 
-Your environment is now set up with initial dependencies to use `booleannet`.
-
 [pixi]: https://pixi.prefix.dev/latest/
+[graphviz]: https://graphviz.org/
+[pyboolnet]: https://github.com/hklarner/pyboolnet
+[pystablemotifs]: https://github.com/jcrozum/pystablemotifs
 
 ## Install booleannet
 
@@ -41,11 +42,12 @@ Usage: bnet [OPTIONS] COMMAND [ARGS]...
   BooleanNet command line tools.
 
 Options:
-  --help  Show this message and exit.
+  -h, --help  Show this message and exit.
 
 Commands:
-  graphviz  Generates a Graphviz graph from a model.
+  diagram   Open the succession diagram editor.
   models    List model summaries, or print one model in the chosen format.
+  show      Generates a Graphviz graph from a model.
   simulate  Run a synchronous or asynchronous simulation.
 ```
 
@@ -53,7 +55,7 @@ Add `--help` to any subcommand to see all available options.
 
 ## models: manage known models
 
-The `bnet models` subcommand operates on models from the [Biodivine Boolean Models (BBM) Benchmark Dataset][bbmb].
+The `bnet models` subcommand operates on models from the [Biodivine Boolean Models (BBM) Benchmark Dataset][bbmb]. 
 
 [bbmb]: https://bbm.sybila.fi.muni.cz/
 
@@ -78,7 +80,7 @@ id   name                                                   var    in    reg
 ...
 ```
 
-To get the rules for a specific model:
+A key is a model number (`7` or `007`) or text matched against the id or name. The default format is BooleanNet rules:
 
 ```bash
 # Get rules for model 7
@@ -102,11 +104,20 @@ You can also get the rules for a model by name:
 bnet models CORTICAL-AREA-DEVELOPMENT
 ```
 
-Get the rules in other formats:
+Other formats: `bnet`, `booleannet`, `sbml`, `aeon`, `bma`, `inferred_graph`, `metadata`, `readme`.
 
 ```bash
-# Get model 7 in BNet format
 bnet models 7 -f bnet
+```
+
+The command `bnet models --show` opens a window with a dropdown of every model and draws the interaction graph of the one you pick. The window uses the same Graphviz engines as the `bnet show` command.
+
+```bash
+# Select model from dropdown menu.
+bnet models --show
+
+# Show model 7 from dropdown menu.
+bnet models 7 --show
 ```
 
 ## simulate: run a model
@@ -126,7 +137,7 @@ Then you can run the model with:
 bnet simulate model.txt A=1 B=? -n 5
 ```
 
-On row per iteration, and one column per node. The first row is the initial state. `1` is on, `.` is off. It sets a random initial state for any node that is not set explicitly.
+One row per iteration, and one column per node. The first row is the initial state. `1` is on, `.` is off. It sets a random initial state for any node that is not set explicitly.
 
 
 ```
@@ -157,32 +168,43 @@ Coup_fti Emx2 Fgf8 Pax6 Sp8
 1 1 . . .
 ```
 
-The default mode is `sync`. The `-m async` option uses random order asynchronous updates. You can pass the initial conditions from a file with the `--init` option.
-
-## graphviz: visualize a model
+The default mode is `sync`. `-m async` uses random-order asynchronous updates. `--init` reads initial conditions from a file (`A=1 B=0 C=?`, spaces or newlines). Positional `NODE=VALUE` assignments override `--init` and any init lines in the rules. `-l` prints only the listed nodes, in that order:
 
 ```bash
-# If you have a model in a file
-bnet graphviz -i model.txt
+bnet simulate model.txt A=1 B=? -n 5 -l A,C
 ```
 
+## show: visualize a model
+
+`bnet show` builds a signed interaction graph. Rules come from `-i` or from stdin.
+
 ```bash
-# You can pipe the rule to graphviz
-bnet models CORTICAL-AREA-DEVELOPMENT | bnet graphviz
+# Show model from a file.
+bnet show -i model.txt
+
+# Stream model rules into the show command.
+bnet models CORTICAL-AREA-DEVELOPMENT | bnet show
 ```
 
+With no `-o`, it writes a temporary files. Add `-o` to write to a file and not open a window.
 
-## Convert BBMB to JSON
-
-This is used internally to transform the BBMB model repository to a single JSON file.
-
-Skips a few large models that make the file too large.
+`-e` picks the layout engine (`dot`, `neato`, `fdp`, `sfdp`, `circo`, `twopi`; default `circo`).
 
 ```bash
-python booleannet/bbm2json.py \
-       --summary ~/src/biodivine-boolean-models/models/summary.csv 
-       --models ~/src/biodivine-boolean-models/models 
-       --skip 253,248,79,261,256
-       --output models.json.gz
+bnet show -i model.txt -o model.pdf -e circo
+```
+
+## diagram: succession diagram
+
+`bnet diagram` opens an editor for Boolean rules and their succession diagram.
+
+The left side is a rules editor (a small example is filled in) and a simulate-size limit (default 100). Draw, or Ctrl-Enter, computes attractors and minimal trap spaces, lists them in the lower pane, and draws the succession diagram on the right. Save writes the diagram as GraphML.
+
+This software requires [pystablemotifs][pystablemotifs].
+
+[pystablemotifs]: https://github.com/jcrozum/pystablemotifs
+
+```bash
+bnet diagram
 ```
 

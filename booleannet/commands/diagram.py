@@ -70,8 +70,26 @@ def report(ar, primes):
     return "\n".join(lines)
 
 
+def state_text(states):
+    if not states:
+        return "{}"
+    names = sorted(states)
+    head = " ".join(names)
+    body = " ".join(str(states[name]) for name in names)
+    return f"{head}\n{body}"
+
+
+def node_text(node, data):
+    if "motif union" in data:
+        return state_text(data["motif union"])
+    states = data.get("states")
+    if isinstance(states, dict):
+        return f"Attractor {data.get('index', node)}\n{state_text(states)}"
+    return str(data.get("label", node))
+
+
 def render(graph):
-    labels = {str(n): str(data.get("label", n)) for n, data in graph.nodes(data=True)}
+    labels = {str(n): node_text(n, data) for n, data in graph.nodes(data=True)}
     drawn = nx.DiGraph()
     drawn.add_nodes_from(labels)
     drawn.add_edges_from(graph.edges())
