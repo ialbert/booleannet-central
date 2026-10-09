@@ -10,9 +10,8 @@ from tkinter import scrolledtext
 
 import click
 import networkx as nx
-import pyboolnet
-import pystablemotifs as sm
-import pystablemotifs.export as ex
+
+from booleannet import defer
 
 MAX_SIMULATE_SIZE = 100
 NODE_FONT = "20"
@@ -44,7 +43,7 @@ D* = A and D
 """
 
 
-def trap_spaces(primes):
+def trap_spaces(primes, pyboolnet):
     found = pyboolnet.trap_spaces.compute_trap_spaces(primes, "min")
     spaces = []
     for space in found:
@@ -57,11 +56,11 @@ def trap_spaces(primes):
     return spaces
 
 
-def report(ar, primes):
+def report(ar, primes, pyboolnet):
     lines = [f"{len(ar.attractors)} attractors"]
     for attractor in ar.attractors:
         lines.append(str(attractor.attractor_dict))
-    spaces = trap_spaces(primes)
+    spaces = trap_spaces(primes, pyboolnet)
     lines.append("")
     lines.append("minimal trap spaces")
     for space in spaces:
@@ -113,11 +112,12 @@ def write_graphml(graph, path):
     nx.write_graphml(out, path)
 
 
-def analyze(rules, limit):
+def analyze(rules, limit, tools):
+    pyboolnet, sm, ex = tools
     primes = sm.format.create_primes(rules)
     ar = sm.AttractorRepertoire.from_primes(primes, max_simulate_size=limit)
     graph = ex.networkx_succession_diagram(ar, include_attractors_in_diagram=True)
-    return report(ar, primes), render(graph), graph
+    return report(ar, primes, pyboolnet), render(graph), graph
 
 
 class App:
@@ -207,15 +207,16 @@ class App:
         except ValueError:
             self.status.configure(text="simulate size must be an integer")
             return
+        tools = defer.succession()
         self.busy = True
         self.button.configure(state="disabled")
         self.status.configure(text="Computing...")
         rules = self.rules.get("1.0", "end-1c")
-        threading.Thread(target=self._work, args=(rules, limit), daemon=True).start()
+        threading.Thread(target=self._work, args=(rules, limit, tools), daemon=True).start()
 
-    def _work(self, rules, limit):
+    def _work(self, rules, limit, tools):
         try:
-            text, png, graph = analyze(rules, limit)
+            text, png, graph = analyze(rules, limit, tools)
         except Exception as exc:
             traceback.print_exc()
             msg = str(exc).strip().splitlines()
