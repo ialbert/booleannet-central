@@ -9,7 +9,10 @@ __pycache__/
 
 # C extensions
 *.so
-
+*.dot
+*.png
+*.pdf
+*.lock
 # Distribution / packaging
 .Python
 env/

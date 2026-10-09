@@ -1,5 +1,34 @@
 """Boolean network modeling."""
 import os
+import shutil
+import logging
+from importlib.resources import files
+from pathlib import Path
+
+# ~/.config/bnet holds the models database and other local data.
+# The packaged database is copied once; an existing file is left in place.
+CONFIG = Path.home() / ".config" / "bnet"
+TMP = CONFIG / "tmp"
+MODELS = CONFIG / "models.json.gz"
+
+# Configure the logger.
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+def prepare() -> None:
+    """Create ~/.config/bnet and copy the default models database if it is missing."""
+    CONFIG.mkdir(parents=True, exist_ok=True)
+    TMP.mkdir(parents=True, exist_ok=True)
+    if MODELS.exists():
+        return
+    packaged = files("booleannet").joinpath("data", "models.json.gz")
+    partial = MODELS.with_suffix(".partial")
+    with packaged.open("rb") as src, partial.open("wb") as dst:
+        shutil.copyfileobj(src, dst)
+    partial.replace(MODELS)
+
+
+prepare()
 
 from . import util
 from . import ruleparser, boolmodel, timemodel, tokenizer

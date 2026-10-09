@@ -2,17 +2,15 @@
 
 import click
 
-from booleannet.commands.diagram import cli as diagram
-from booleannet.commands.gviz import cli as gviz
-from booleannet.commands.models import main as models
-from booleannet.commands.simulate import cli as simulate
+
+from booleannet.commands import models, show, simulate, diagram
 
 # Subcommand name -> click command. Add a new tool here.
 COMMANDS = {
-    "models": models,
-    "graphviz": gviz,
-    "simulate": simulate,
-    "diagram": diagram,
+    "models": models.cli,
+    "show": show.cli,
+    "simulate": simulate.cli,
+    "diagram": diagram.cli,
 }
 
 HELP = {"help_option_names": ["-h", "--help"]}
