@@ -1,4 +1,7 @@
 """Boolean network modeling."""
+
+from .about import __version__
+
 import os
 import shutil
 import logging
@@ -33,8 +36,6 @@ prepare()
 from . import util
 from . import ruleparser, boolmodel, timemodel, tokenizer
 from .tokenizer import modify_states
-
-__version__ = "2.0"
 
 
 def Model(text, mode):

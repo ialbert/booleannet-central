@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "booleannet"
-version = "2.0.3"
+dynamic = ["version"]
 description = "Boolean network modeling"
 readme = "README.md"
 authors = [{ name = "Istvan Albert", email = "istvan.albert@gmail.com" }]
@@ -23,6 +23,9 @@ Homepage = "https://github.com/ialbert/booleannet"
 
 [project.scripts]
 bnet = "booleannet.cli:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "booleannet.about.__version__"}
 
 [tool.setuptools.packages.find]
 include = ["booleannet*"]
