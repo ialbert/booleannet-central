@@ -7,11 +7,18 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import font as tkfont
 from tkinter import scrolledtext
+from booleannet import logger
 
 import click
 import networkx as nx
 
-from booleannet import defer
+try:
+    import pyboolnet
+    import pystablemotifs as sm
+    import pystablemotifs.export as ex
+    PYSTABLEMOTIF_READY = True
+except ImportError:
+    PYSTABLEMOTIF_READY = False
 
 MAX_SIMULATE_SIZE = 100
 NODE_FONT = "20"
@@ -43,7 +50,7 @@ D* = A and D
 """
 
 
-def trap_spaces(primes, pyboolnet):
+def trap_spaces(primes):
     found = pyboolnet.trap_spaces.compute_trap_spaces(primes, "min")
     spaces = []
     for space in found:
@@ -56,11 +63,11 @@ def trap_spaces(primes, pyboolnet):
     return spaces
 
 
-def report(ar, primes, pyboolnet):
+def report(ar, primes):
     lines = [f"{len(ar.attractors)} attractors"]
     for attractor in ar.attractors:
         lines.append(str(attractor.attractor_dict))
-    spaces = trap_spaces(primes, pyboolnet)
+    spaces = trap_spaces(primes)
     lines.append("")
     lines.append("minimal trap spaces")
     for space in spaces:
@@ -112,12 +119,11 @@ def write_graphml(graph, path):
     nx.write_graphml(out, path)
 
 
-def analyze(rules, limit, tools):
-    pyboolnet, sm, ex = tools
+def analyze(rules, limit):
     primes = sm.format.create_primes(rules)
     ar = sm.AttractorRepertoire.from_primes(primes, max_simulate_size=limit)
     graph = ex.networkx_succession_diagram(ar, include_attractors_in_diagram=True)
-    return report(ar, primes, pyboolnet), render(graph), graph
+    return report(ar, primes), render(graph), graph
 
 
 class App:
@@ -207,16 +213,20 @@ class App:
         except ValueError:
             self.status.configure(text="simulate size must be an integer")
             return
-        tools = defer.succession()
+        if not PYSTABLEMOTIF_READY:
+            msg = "pyboolnet and pystablemotifs are not installed properly."
+            logger.error(msg)
+            self.status.configure(text=msg)
+            return
         self.busy = True
         self.button.configure(state="disabled")
         self.status.configure(text="Computing...")
         rules = self.rules.get("1.0", "end-1c")
-        threading.Thread(target=self._work, args=(rules, limit, tools), daemon=True).start()
+        threading.Thread(target=self._work, args=(rules, limit), daemon=True).start()
 
-    def _work(self, rules, limit, tools):
+    def _work(self, rules, limit):
         try:
-            text, png, graph = analyze(rules, limit, tools)
+            text, png, graph = analyze(rules, limit)
         except Exception as exc:
             traceback.print_exc()
             msg = str(exc).strip().splitlines()

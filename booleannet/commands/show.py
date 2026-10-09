@@ -1,13 +1,27 @@
 """Build a Graphviz interaction graph from BooleanNet rules."""
 
+import logging
 import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
-from booleannet import defer, logger
+from booleannet import logger
 
 import click
+
+try:
+    from pyboolnet import log
+    from pyboolnet.boolean_normal_forms import functions2primes
+    from pyboolnet.interaction_graphs import (
+        add_style_interactionsigns,
+        igraph2dot,
+        primes2igraph,
+    )
+    log.setLevel(logging.INFO)
+    PYBOOLNET_READY = True
+except ImportError:
+    PYBOOLNET_READY = False
 
 KEYWORDS = {"and", "or", "not", "True", "False"}
 ENGINES = ("dot", "neato", "fdp", "sfdp", "circo", "twopi")
@@ -74,7 +88,9 @@ def write_graphml(graph, path: Path) -> None:
 
 
 def rules2dot(text: str, dot_path: Path) -> None:
-    functions2primes, primes2igraph, add_style_interactionsigns, igraph2dot = defer.interaction_graph()
+    if not PYBOOLNET_READY:
+        print("pyboolnet is not installed properly.")
+        sys.exit(1)
     primes = functions2primes(booleannet2functions(text))
     graph = primes2igraph(primes)
     # Default width is ~0.2in for one-letter names, which clips the labels.
