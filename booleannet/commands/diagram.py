@@ -8,6 +8,7 @@ from tkinter import filedialog
 from tkinter import font as tkfont
 from tkinter import scrolledtext
 from booleannet import logger
+from booleannet.verify import PYBOOLNET_READY, PYSTABLEMOTIFS_READY
 
 import click
 import networkx as nx
@@ -16,9 +17,8 @@ try:
     import pyboolnet
     import pystablemotifs as sm
     import pystablemotifs.export as ex
-    PYSTABLEMOTIF_READY = True
 except ImportError:
-    PYSTABLEMOTIF_READY = False
+    pass
 
 MAX_SIMULATE_SIZE = 100
 NODE_FONT = "20"
@@ -213,10 +213,17 @@ class App:
         except ValueError:
             self.status.configure(text="simulate size must be an integer")
             return
-        if not PYSTABLEMOTIF_READY:
-            msg = "pyboolnet and pystablemotifs are not installed properly."
-            logger.error(msg)
-            self.status.configure(text=msg)
+        if not PYBOOLNET_READY or not PYSTABLEMOTIFS_READY:
+            
+            if not PYBOOLNET_READY:
+                msg = "pyboolnet is not installed properly."
+                logger.error(msg)
+                self.status.configure(text=msg)            
+            if not PYSTABLEMOTIFS_READY:
+                msg = "pystablemotifs is not installed properly."
+                logger.error(msg)
+                self.status.configure(text=msg)
+            
             return
         self.busy = True
         self.button.configure(state="disabled")
@@ -295,7 +302,7 @@ class App:
 
 @click.command()
 def cli() -> None:
-    """Open the succession diagram editor."""
+    """Draws an attractor succession diagram."""
     root = tk.Tk()
     App(root)
     root.mainloop()

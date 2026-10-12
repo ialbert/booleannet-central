@@ -23,7 +23,7 @@ def test_help():
     assert isinstance(bare.exception, SystemExit)
     assert "Commands:" in bare.output
     invoke("--help")
-    for name in ("models", "show", "simulate", "diagram"):
+    for name in ("models", "show", "simulate", "diagram", "doctor"):
         invoke(name, "--help")
 
 
@@ -45,6 +45,12 @@ def test_show(tmp_path):
     invoke("show", "-i", str(rules), "-o", str(image), "-e", "circo")
     assert image.is_file()
     assert image.stat().st_size > 0
+
+
+def test_doctor():
+    result = invoke("doctor")
+    for name in ("pyboolnet", "pystablemotifs"):
+        assert name in result.output
 
 
 def test_diagram(monkeypatch):

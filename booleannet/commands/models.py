@@ -293,7 +293,7 @@ def show_gui(models, selected: str | None = None) -> None:
     help="Open a window to pick a model and draw its interaction graph.",
 )
 def cli(key, database, fmt, gui):
-    """List model summaries, or print one model in the chosen format.
+    """Lists model summaries, or print one model in the chosen format.
 
     KEY is a number (1 or 001) or text matched against the id or name.
     With --show, open a dropdown of every model and draw the one you pick.

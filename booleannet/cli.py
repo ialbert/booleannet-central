@@ -3,7 +3,7 @@
 import click
 
 
-from booleannet.commands import models, show, simulate, diagram
+from booleannet.commands import models, show, simulate, diagram, doctor
 
 # Subcommand name -> click command. Add a new tool here.
 COMMANDS = {
@@ -11,6 +11,7 @@ COMMANDS = {
     "show": show.cli,
     "simulate": simulate.cli,
     "diagram": diagram.cli,
+    "doctor": doctor.cli,
 }
 
 HELP = {"help_option_names": ["-h", "--help"]}

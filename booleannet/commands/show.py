@@ -7,21 +7,16 @@ import subprocess
 import sys
 from pathlib import Path
 from booleannet import logger
+from booleannet.verify import PYBOOLNET_READY
 
 import click
 
 try:
-    from pyboolnet import log
-    from pyboolnet.boolean_normal_forms import functions2primes
-    from pyboolnet.interaction_graphs import (
-        add_style_interactionsigns,
-        igraph2dot,
-        primes2igraph,
-    )
-    log.setLevel(logging.INFO)
-    PYBOOLNET_READY = True
+    import pyboolnet.boolean_normal_forms
+    import pyboolnet.interaction_graphs
+    pyboolnet.log.setLevel(logging.INFO)
 except ImportError:
-    PYBOOLNET_READY = False
+    pass
 
 KEYWORDS = {"and", "or", "not", "True", "False"}
 ENGINES = ("dot", "neato", "fdp", "sfdp", "circo", "twopi")
@@ -89,10 +84,10 @@ def write_graphml(graph, path: Path) -> None:
 
 def rules2dot(text: str, dot_path: Path) -> None:
     if not PYBOOLNET_READY:
-        print("pyboolnet is not installed properly.")
+        logger.error("pyboolnet is not installed properly.")
         sys.exit(1)
-    primes = functions2primes(booleannet2functions(text))
-    graph = primes2igraph(primes)
+    primes = pyboolnet.boolean_normal_forms.functions2primes(booleannet2functions(text))
+    graph = pyboolnet.interaction_graphs.primes2igraph(primes)
     # Default width is ~0.2in for one-letter names, which clips the labels.
     graph.graph["node"]["width"] = "0.55"
     graph.graph["node"]["fontsize"] = "14"
@@ -103,8 +98,8 @@ def rules2dot(text: str, dot_path: Path) -> None:
     for name in graph.nodes:
         if name.startswith("v_"):
             graph.nodes[name]["label"] = name.removeprefix("v_")
-    add_style_interactionsigns(graph)
-    igraph2dot(graph, str(dot_path))
+    pyboolnet.interaction_graphs.add_style_interactionsigns(graph)
+    pyboolnet.interaction_graphs.igraph2dot(graph, str(dot_path))
     graphml = dot_path.with_suffix(".graphml")
     write_graphml(graph, graphml)
     logger.debug(f"created {graphml}")
@@ -178,7 +173,7 @@ def show_png(path: Path) -> None:
 @click.option("-e", "--engine", default="circo", show_default=True, type=click.Choice(ENGINES), help="Graphviz layout engine.")
 @click.pass_context
 def cli(ctx: click.Context, rules: Path | None, image: Path | None, engine: str) -> None:
-    """Generates a Graphviz graph from a model."""
+    """Generates an network graph image from a model."""
     found = read_rules(rules)
     if found is None:
         click.echo(ctx.get_help())
